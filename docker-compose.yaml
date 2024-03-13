@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+
+  chat-server:
+    container_name: chat-server
+    build: .
+    env_file:
+      - .env
+    restart: unless-stopped

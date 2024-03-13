@@ -7,4 +7,6 @@ services:
     build: .
     env_file:
       - .env
+    ports:
+      - "${GRPC_PORT}:${GRPC_PORT}"
     restart: unless-stopped

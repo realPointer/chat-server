@@ -19,7 +19,7 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v5.0.0
         with:
-          go-version: '1.22.1'
+          go-version-file: './go.mod'
           cache-dependency-path: go.sum
 
       - name: Build
@@ -38,7 +38,7 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v5.0.0
         with:
-          go-version: '1.22.1'
+          go-version-file: './go.mod'
           cache: false
 
       - name: golangci-lint

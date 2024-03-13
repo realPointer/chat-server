@@ -45,4 +45,4 @@ jobs:
         uses: golangci/golangci-lint-action@v4
         with:
           version: v1.54
-          args: --timeout=30m --config=./.golangci.yml --issues-exit-code=0
+          args: --timeout=30m --config=./.golangci.yaml --issues-exit-code=0

@@ -12,6 +12,16 @@ compose-down: ### Down docker-compose
 	docker-compose down --remove-orphans
 .PHONY: compose-down
 
+docker-rm-volume: ### Remove docker volume
+	docker volume rm chat-server_pg-data
+.PHONY: docker-rm-volume
+
+install-all: ### Install all dependencies and tools
+	make install-deps
+	make install-linter
+	make install-migrate
+.PHONY: install-all
+
 install-deps: ### Install dependencies
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33
 	GOBIN=$(LOCAL_BIN) go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
@@ -42,3 +52,11 @@ lint: ### Check by golangci linter
 test: ### Run test
 	go test -v ./...
 .PHONY: test
+
+install-migrate: ### Install migrate
+	GOBIN=$(LOCAL_BIN) go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.0
+.PHONY: install-migrate
+
+migrate-create: ### Create migration file
+	$(LOCAL_BIN)/migrate create -ext sql -dir migrations "chat-server"
+.PHONY: migrate-create

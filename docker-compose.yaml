@@ -1,12 +1,27 @@
 version: '3.8'
 
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:16.2-alpine3.19
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    restart: unless-stopped
 
   chat-server:
     container_name: chat-server
     build: .
+    depends_on:
+      - postgres
     env_file:
       - .env
     ports:
-      - "${GRPC_PORT}:${GRPC_PORT}"
+      - ${GRPC_PORT}:${GRPC_PORT}
     restart: unless-stopped
+
+volumes:
+  pg-data:

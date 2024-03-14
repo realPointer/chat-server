@@ -1,7 +1,6 @@
 package app
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -32,15 +31,12 @@ func Run() {
 	}
 	defer pg.Close()
 
-	err = pg.Pool.Ping(context.Background())
-	if err != nil {
-		log.Fatal(fmt.Errorf("app - Run - pg.Pool.Ping: %w", err))
-	}
-
 	// GRPC
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.Port))
 	if err != nil {
-		log.Fatalf("failed to listen port %d: %v", cfg.GRPC.Port, err)
+		log.Println(fmt.Errorf("failed to listen port %d: %w", cfg.GRPC.Port, err))
+
+		return
 	}
 
 	s := grpc.NewServer()
@@ -49,6 +45,8 @@ func Run() {
 	log.Printf("server listening at: %v", cfg.GRPC.Port)
 
 	if err = s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve grpc: %v", err)
+		log.Println(fmt.Errorf("failed to serve grpc: %w", err))
+
+		return
 	}
 }

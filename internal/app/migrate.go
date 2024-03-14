@@ -19,7 +19,7 @@ const (
 
 func init() {
 	databaseURL, ok := os.LookupEnv("PG_URL")
-	if !ok || len(databaseURL) == 0 {
+	if !ok || databaseURL == "" {
 		log.Fatalf("migrate: environment variable not declared: PG_URL")
 	}
 
@@ -37,6 +37,7 @@ func init() {
 
 		log.Printf("Migrate: postgres is trying to connect, attempts left: %d", attempts)
 		time.Sleep(_defaultTimeout)
+
 		attempts--
 	}
 
@@ -45,13 +46,15 @@ func init() {
 	}
 
 	err = m.Up()
-	defer m.Close()
+	m.Close()
+
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		log.Fatalf("Migrate: up error: %s", err)
 	}
 
 	if errors.Is(err, migrate.ErrNoChange) {
 		log.Printf("Migrate: no change")
+
 		return
 	}
 

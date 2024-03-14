@@ -3,19 +3,12 @@ package app
 import (
 	"fmt"
 	"log"
-	"net"
 
 	"github.com/realPointer/chat-server/config"
-	desc "github.com/realPointer/chat-server/pkg/chat_v1"
+
+	grpcserver "github.com/realPointer/chat-server/pkg/grpc_server"
 	"github.com/realPointer/chat-server/pkg/postgres"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
-
-type server struct {
-	desc.UnimplementedChatV1Server
-}
 
 func Run() {
 	// Config
@@ -32,21 +25,13 @@ func Run() {
 	defer pg.Close()
 
 	// GRPC
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.Port))
+	grpcServer, err := grpcserver.New(grpcserver.WithPort(cfg.GRPC.Port))
 	if err != nil {
-		log.Println(fmt.Errorf("failed to listen port %d: %w", cfg.GRPC.Port, err))
-
-		return
+		log.Printf("app - Run - grpcserver.New: %v", err)
 	}
 
-	s := grpc.NewServer()
-	reflection.Register(s)
-	desc.RegisterChatV1Server(s, server{})
-	log.Printf("server listening at: %v", cfg.GRPC.Port)
-
-	if err = s.Serve(lis); err != nil {
-		log.Println(fmt.Errorf("failed to serve grpc: %w", err))
-
-		return
+	err = grpcServer.Start()
+	if err != nil {
+		log.Printf("app - Run - grpcServer.Start: %v", err)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/realPointer/chat-server/config"
+	"github.com/realPointer/chat-server/internal/api/chat"
 
 	grpcserver "github.com/realPointer/chat-server/pkg/grpc_server"
 	"github.com/realPointer/chat-server/pkg/postgres"
@@ -30,7 +31,7 @@ func Run() {
 		log.Printf("app - Run - grpcserver.New: %v", err)
 	}
 
-	err = grpcServer.Start()
+	err = grpcServer.Start(chat.NewImplementation())
 	if err != nil {
 		log.Printf("app - Run - grpcServer.Start: %v", err)
 	}
